@@ -45,7 +45,7 @@ const makePrompt = (tf, instrument, instType) =>
   '"entry_ideal":null,"stop_loss":null,"take_profit":null,"aviso_risco":null}';
 const API_KEY = import.meta.env.VITE_API_KEY;
 const callClaude = async (b64, tf, instrument, instType) => {
-  const res = await fetch("/api/analyze", {
+  const res = await fetch("/api/analyze.mjs", {
     method: "POST",
    headers: {
   "Content-Type": "application/json"
