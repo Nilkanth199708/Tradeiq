@@ -45,7 +45,7 @@ const makePrompt = (tf, instrument, instType) =>
   '"entry_ideal":null,"stop_loss":null,"take_profit":null,"aviso_risco":null}';
 
 const callClaude = async (b64, tf, instrument, instType) => {
-  const res = await fetch("/api/analyze.mjs", {
+ const res = await fetch("/api/analyze", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
