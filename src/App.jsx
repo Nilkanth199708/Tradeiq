@@ -280,16 +280,18 @@ export default function TradeIQ() {
   const togTF   = tf => setTfs(p => p.includes(tf) ? (p.length>1?p.filter(t=>t!==tf):p) : [...p,tf]);
 
   const onFile = useCallback(file => {
-    if (!file?.type.startsWith("image/")) return;
-    setImg(URL.createObjectURL(file));
-    setImgType(file.type || "image/jpeg");
+    if (!file || !file.type.startsWith("image/")) return;
+    const fileType = file.type || "image/jpeg";
+    setImgType(fileType);
     setRes({}); setErrs({}); setAtab("C"); setNote(""); setShowN(false);
-    const r = new FileReader();
-    r.onload = e => {
-      const base64 = e.target.result.split(",")[1];
-      setB64(base64);
+    const reader = new FileReader();
+    reader.onloadend = function() {
+      const result = reader.result;
+      const base64String = result.split(",")[1];
+      setB64(base64String);
+      setImg(result);
     };
-    r.readAsDataURL(file);
+    reader.readAsDataURL(file);
   }, []);
 
   const analyze = async () => {
@@ -410,7 +412,7 @@ export default function TradeIQ() {
 
                 <input ref={fref} type="file" accept="image/*" style={{ display:"none" }} onChange={e=>onFile(e.target.files[0])} />
 
-                {img && b64 && (
+                {b64 && (
                   <button onClick={analyze} disabled={busy}
                     style={{ background:busy?"#0d1528":ic, color:busy?"#243650":"#05080e", width:"100%", border:"none", padding:"10px 18px", fontFamily:"JetBrains Mono,monospace", fontSize:11, fontWeight:500, letterSpacing:2, cursor:busy?"not-allowed":"pointer", borderRadius:5, transition:".2s" }}>
                     {busy?"PROCESSANDO...":"ANALISAR "+tfs.join(" / ")}
