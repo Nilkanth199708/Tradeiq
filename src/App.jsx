@@ -282,10 +282,13 @@ export default function TradeIQ() {
   const onFile = useCallback(file => {
     if (!file?.type.startsWith("image/")) return;
     setImg(URL.createObjectURL(file));
+    setImgType(file.type || "image/jpeg");
     setRes({}); setErrs({}); setAtab("C"); setNote(""); setShowN(false);
     const r = new FileReader();
-    r.onload = e => setB64(e.target.result.split(",")[1]);
-    setImgType(file.type || "image/jpeg");
+    r.onload = e => {
+      const base64 = e.target.result.split(",")[1];
+      setB64(base64);
+    };
     r.readAsDataURL(file);
   }, []);
 
@@ -407,7 +410,7 @@ export default function TradeIQ() {
 
                 <input ref={fref} type="file" accept="image/*" style={{ display:"none" }} onChange={e=>onFile(e.target.files[0])} />
 
-                {img && (
+                {img && b64 && (
                   <button onClick={analyze} disabled={busy}
                     style={{ background:busy?"#0d1528":ic, color:busy?"#243650":"#05080e", width:"100%", border:"none", padding:"10px 18px", fontFamily:"JetBrains Mono,monospace", fontSize:11, fontWeight:500, letterSpacing:2, cursor:busy?"not-allowed":"pointer", borderRadius:5, transition:".2s" }}>
                     {busy?"PROCESSANDO...":"ANALISAR "+tfs.join(" / ")}
