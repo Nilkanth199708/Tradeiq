@@ -47,19 +47,18 @@ const API_KEY = import.meta.env.VITE_API_KEY;
 const callClaude = async (b64, tf, instrument, instType) => {
   const res = await fetch("/api/analyze.mjs", {
     method: "POST",
-   headers: {
+  headers: {
   "Content-Type": "application/json"
 },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1000,
-      system: makePrompt(tf, instrument, instType),
-      messages: [{ role: "user", content: [
-        { type: "image", source: { type: "base64", media_type: "image/jpeg", data: b64 } },
-        { type: "text", text: "Analise este grafico de " + instrument + " timeframe " + tf + ". Retorne o JSON." }
-      ]}]
-    })
-  });
+  model: "claude-sonnet-4-20250514",
+  max_tokens: 1000,
+  system: makePrompt(tf, instrument, instType),
+  messages: [{ role: "user", content: [
+    { type: "image", source: { type: "base64", media_type: imgType, data: b64 } },
+    { type: "text", text: "Analise este grafico de " + instrument + " timeframe " + tf + ". Retorne o JSON." }
+  ]}]
+})
   const data = await res.json();
   const raw = data.content?.map(b => b.text || "").join("").trim().replace(/```json|```/g, "").trim();
   return JSON.parse(raw);
