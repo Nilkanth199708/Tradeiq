@@ -45,17 +45,20 @@ const makePrompt = (tf, instrument, instType) =>
   '"entry_ideal":null,"stop_loss":null,"take_profit":null,"aviso_risco":null}';
 
 const callClaude = async (b64, tf, instrument, instType) => {
- const res = await fetch("/api/analyze", {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "x-api-key": import.meta.env.VITE_API_KEY,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
     },
     body: JSON.stringify({
       model: "claude-sonnet-4-20250514",
       max_tokens: 1000,
       system: makePrompt(tf, instrument, instType),
       messages: [{ role: "user", content: [
-        { type: "image", source: { type: "base64", media_type: "image/jpeg", data: b64 } },
+        { type: "image", source: { type: "base64", media_type: imgType, data: b64 } },
         { type: "text", text: "Analise este grafico de " + instrument + " timeframe " + tf + ". Retorne o JSON." }
       ]}]
     })
