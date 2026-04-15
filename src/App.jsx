@@ -245,6 +245,7 @@ export default function TradeIQ() {
   const [tfs, setTfs]       = useState(["H1","H4","D1"]);
   const [img, setImg]       = useState(null);
   const [b64, setB64]       = useState(null);
+  const [imgType, setImgType] = useState("image/jpeg");
   const [res, setRes]       = useState({});
   const [load, setLoad]     = useState({});
   const [errs, setErrs]     = useState({});
@@ -284,6 +285,7 @@ export default function TradeIQ() {
     setRes({}); setErrs({}); setAtab("C"); setNote(""); setShowN(false);
     const r = new FileReader();
     r.onload = e => setB64(e.target.result.split(",")[1]);
+    setImgType(file.type || "image/jpeg");
     r.readAsDataURL(file);
   }, []);
 
