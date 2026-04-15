@@ -288,6 +288,7 @@ export default function TradeIQ() {
     reader.onloadend = function() {
       const result = reader.result;
       const base64String = result.split(",")[1];
+      console.log("File loaded, b64 length:", base64String ? base64String.length : "NULL");
       setB64(base64String);
       setImg(result);
     };
@@ -295,7 +296,11 @@ export default function TradeIQ() {
   }, []);
 
   const analyze = async () => {
-    if (!b64) return;
+    console.log("analyze called, b64 length:", b64 ? b64.length : "NULL");
+    if (!b64) {
+      alert("Erro: imagem nao carregada. Tente fazer upload novamente.");
+      return;
+    }
     setRes({}); setErrs({});
     const ls = {}; tfs.forEach(tf => ls[tf] = true); setLoad(ls);
     await Promise.all(tfs.map(async tf => {
