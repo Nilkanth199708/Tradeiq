@@ -45,27 +45,34 @@ const makePrompt = (tf, instrument, instType) =>
   '"entry_ideal":null,"stop_loss":null,"take_profit":null,"aviso_risco":null}';
 
 const callClaude = async (b64, tf, instrument, instType) => {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": import.meta.env.VITE_API_KEY,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true"
-    },
-    body: JSON.stringify({
-     model: "claude-haiku-4-5-20251001",
+  try {
+    const prompt = makePrompt(tf, instrument, instType);
+    const bodyObj = {
+      model: "claude-haiku-4-5-20251001",
       max_tokens: 1000,
-      system: makePrompt(tf, instrument, instType),
+      system: prompt,
       messages: [{ role: "user", content: [
-        { type: "image", source: { type: "base64", media_type: imgType, data: b64 } },
+        { type: "image", source: { type: "base64", media_type: imgType || "image/jpeg", data: b64 } },
         { type: "text", text: "Analise este grafico de " + instrument + " timeframe " + tf + ". Retorne o JSON." }
       ]}]
-    })
-  });
-  const data = await res.json();
-  const raw = data.content?.map(b => b.text || "").join("").trim().replace(/```json|```/g, "").trim();
-  return JSON.parse(raw);
+    };
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": import.meta.env.VITE_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify(bodyObj)
+    });
+    const data = await res.json();
+    const raw = data.content?.map(b => b.text || "").join("").trim().replace(/```json|```/g, "").trim();
+    return JSON.parse(raw);
+  } catch(err) {
+    console.error("callClaude error:", err);
+    throw err;
+  }
 };
 
 const sigC  = s => s === "COMPRA" ? "#00e5a0" : s === "VENDA" ? "#ff4d6d" : "#f5c518";
