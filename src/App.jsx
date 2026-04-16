@@ -52,7 +52,7 @@ const callClaude = async (b64, tf, instrument, instType) => {
       max_tokens: 1000,
       system: prompt,
       messages: [{ role: "user", content: [
-        { type: "image", source: { type: "base64", media_type: imgType || "image/jpeg", data: b64 } },
+      { type: "image", source: { type: "base64", media_type: "image/jpeg", data: b64 } },
         { type: "text", text: "Analise este grafico de " + instrument + " timeframe " + tf + ". Retorne o JSON." }
       ]}]
     };
